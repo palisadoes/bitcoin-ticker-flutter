@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'coin_data.dart';
+import '../coin_data.dart';
+import '../services/rest.dart';
 import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
@@ -10,6 +11,9 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  double rateBitcoin = 0;
+  var exchangeRateData;
+  ExchangeRate exchangeRate = ExchangeRate();
 
   DropdownButton<String> androidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -25,9 +29,11 @@ class _PriceScreenState extends State<PriceScreen> {
       value: selectedCurrency,
       items: dropdownItems,
       onChanged: (value) {
-        setState(() {
-          selectedCurrency = value;
-        });
+        setState(
+          () {
+            selectedCurrency = value;
+          },
+        );
       },
     );
   }
@@ -43,17 +49,31 @@ class _PriceScreenState extends State<PriceScreen> {
       backgroundColor: Colors.lightBlue,
       itemExtent: 32.0,
       onSelectedItemChanged: (selectedIndex) {
-        print(selectedIndex);
+        setState(
+          () {
+            selectedCurrency = currenciesList[selectedIndex];
+          },
+        );
       },
       children: dropdownItems,
     );
+  }
+
+  void updateUI(dynamic exchangeRateData) {
+    setState(() {
+      if (exchangeRateData == null) {
+        rateBitcoin = 0;
+        return;
+      }
+      rateBitcoin = exchangeRateData['rate'];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('🤑 Coin Ticker'),
+        title: Text('₿ Bitcoin Ticker'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,7 +90,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = ? $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
