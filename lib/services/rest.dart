@@ -5,8 +5,8 @@ const openWeatherMapURL = 'https://rest.coinapi.io/v1/exchangerate/BTC';
 
 class ExchangeRate {
   Future<dynamic> getExchangeRate(String _currency) async {
-    NetworkHelper networkHelper =
-        NetworkHelper('$openWeatherMapURL/$_currency?apikey=$apiKey');
+    String url = '$openWeatherMapURL/$_currency?apikey=$apiKey';
+    NetworkHelper networkHelper = NetworkHelper(url);
     var data = await networkHelper.getData();
     return data;
   }

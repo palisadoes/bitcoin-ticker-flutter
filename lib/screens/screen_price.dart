@@ -5,15 +5,18 @@ import '../services/rest.dart';
 import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
+
+  PriceScreen();
+
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  String assetBase = '';
   double rateBitcoin = 0;
-  var exchangeRateData;
-  ExchangeRate exchangeRate = ExchangeRate();
+  var coinData;
 
   DropdownButton<String> androidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -32,6 +35,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(
           () {
             selectedCurrency = value;
+            updateUIValues();
           },
         );
       },
@@ -52,6 +56,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(
           () {
             selectedCurrency = currenciesList[selectedIndex];
+            updateUIValues();
           },
         );
       },
@@ -59,15 +64,25 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  void updateUI(dynamic exchangeRateData) {
-    setState(() {
-      if (exchangeRateData == null) {
-        rateBitcoin = 0;
-        return;
-      }
-      rateBitcoin = exchangeRateData['rate'];
-    });
+  @override
+  void initState()  {
+    super.initState();
+    updateUIValues();
   }
+
+
+  Future<dynamic> updateUIValues() async {
+    var data = await ExchangeRate().getExchangeRate(selectedCurrency);
+    setState(() {
+      rateBitcoin = data['rate'];
+      assetBase = data['asset_id_base'];
+    },);
+
+    print('-----------------------------------------');
+    print(data);
+    print('-----------------------------------------');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +105,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? $selectedCurrency',
+                  '1 $assetBase = ${rateBitcoin.toStringAsFixed(2)} $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,

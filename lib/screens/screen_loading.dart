@@ -9,6 +9,9 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+
+  String selectedCurrency = 'AUD';
+
   @override
   void initState() {
     super.initState();
@@ -16,14 +19,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getExchangeRateData() async {
-    var data = await ExchangeRate().getExchangeRate();
+    var data = await ExchangeRate().getExchangeRate(selectedCurrency);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return PriceScreen(
-            exchangeRateData: data,
-          );
+          return PriceScreen();
         },
       ),
     );
