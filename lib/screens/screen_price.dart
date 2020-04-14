@@ -14,9 +14,7 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
-  String assetBase = '?';
-  double rateBitcoin = 0;
-  var coinData;
+  Map<String, double> coinData = {};
 
   DropdownButton<String> androidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -64,18 +62,36 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
+
+  Column cardColumn(){
+    List<CurrencyCard> currencyCards = [];
+    for (String crypto in cryptoList){
+      if (coinData != {}){
+      double rate = coinData.containsKey(crypto) ? coinData[crypto] : 0;
+      currencyCards.add(
+          CurrencyCard(
+              assetBase: crypto,
+              rateBitcoin: rate,
+              selectedCurrency: selectedCurrency),);}
+    }
+    return Column(
+      children: currencyCards,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+    );
+  }
+  
+  
   @override
   void initState()  {
     super.initState();
     updateUIValues();
   }
-
+  
 
   Future<dynamic> updateUIValues() async {
-    var data = await ExchangeRate().getExchangeRate(selectedCurrency);
+    var data = await ExchangeRate().getExchangeRates(selectedCurrency);
     setState(() {
-      rateBitcoin = data['rate'];
-      assetBase = data['asset_id_base'];
+      coinData = data;
     },);
 
   }
@@ -91,10 +107,7 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: CurrencyCard(assetBase: assetBase, rateBitcoin: rateBitcoin, selectedCurrency: selectedCurrency),
-          ),
+          cardColumn(),
           Container(
             height: 150.0,
             alignment: Alignment.center,
@@ -122,20 +135,23 @@ class CurrencyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.lightBlueAccent,
-      elevation: 5.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-        child: Text(
-          '1 $assetBase = ${rateBitcoin.toStringAsFixed(2)} $selectedCurrency',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20.0,
-            color: Colors.white,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+      child: Card(
+        color: Colors.lightBlueAccent,
+        elevation: 5.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+          child: Text(
+            '1 $assetBase = ${rateBitcoin == null? 0 :rateBitcoin.toStringAsFixed(2)} $selectedCurrency',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

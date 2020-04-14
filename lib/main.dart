@@ -1,6 +1,5 @@
 import 'package:bitcoin_ticker/screens/screen_price.dart';
 import 'package:flutter/material.dart';
-import 'screens/screen_loading.dart';
 
 void main() => runApp(MyApp());
 
