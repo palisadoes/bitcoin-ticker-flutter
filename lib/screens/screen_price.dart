@@ -14,7 +14,7 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
-  String assetBase = '';
+  String assetBase = '?';
   double rateBitcoin = 0;
   var coinData;
 
@@ -78,9 +78,6 @@ class _PriceScreenState extends State<PriceScreen> {
       assetBase = data['asset_id_base'];
     },);
 
-    print('-----------------------------------------');
-    print(data);
-    print('-----------------------------------------');
   }
 
 
